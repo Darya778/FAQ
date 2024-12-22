@@ -20,21 +20,15 @@ answers = [item["answer"] for item in faq_data]
 
 tf.get_logger().setLevel('ERROR')
 
-bert = "https://tfhub.dev/tensorflow/bert_multi_cased_L-12_H-768_A-12/1"
-bpre = "https://tfhub.dev/tensorflow/bert_multi_cased_preprocess/3"
+bert="https://tfhub.dev/tensorflow/bert_multi_cased_L-12_H-768_A-12/3"
+bpre="https://tfhub.dev/tensorflow/bert_multi_cased_preprocess/3"
 
 bert_preprocess_model=hub.KerasLayer(bpre)
-text_test=['this is such and amazing movie!']
-text_preprocessed=bert_preprocess_model(text_test)
-
-bert_model=hub.KerasLayer(bert)
-bert_results=bert_model(text_preprocessed)
-
-embedding=bert_results["pooled_output"].numpy()
-embedding.shape
-import numpy as np
+bert_model = hub.KerasLayer(bert)
 
 dataset=[]
+questions=list(map(lambda x: x.lower(),questions))
+answers=list(map(lambda x: x.lower(),answers))
 for i in range(len(questions)):
   q_emb=bert_model(bert_preprocess_model(questions[i:i+1]))["pooled_output"].numpy()#.sum(axis=1)
   a_emb=bert_model(bert_preprocess_model(answers[i:i+1]))["pooled_output"].numpy()#.sum(axis=1)
@@ -54,14 +48,12 @@ X=np.array(X)
 Y=np.array(Y)
 X.shape,Y.shape,Y
 
-early_stopping = EarlyStopping(monitor='accuracy', patience=5, restore_best_weights=True, mode='max')
 model=tf.keras.models.Sequential()
-model.add(tf.keras.layers.InputLayer(input_shape=(1024,)))
-model.add(tf.keras.layers.Dense(100,activation='selu'))
-model.add(tf.keras.layers.Dense(1,activation='sigmoid'))
-es=tf.keras.callbacks.EarlyStopping(monitor='auc',mode='max',patience=10,restore_best_weights=True)
-model.compile(optimizer=tf.keras.optimizers.Adam(learning_rate=1e-3),loss='binary_crossentropy',metrics=[tf.keras.metrics.AUC(curve='pr',name='auc')])
-model.fit(X,Y,epochs=1000,class_weight={0:1,1:8}, callbacks=[early_stopping], validation_split=0.2)
+model.add(tf.keras.layers.InputLayer(input_shape=(1536,)))
+model.add(tf.keras.layers.Dense(200,activation="relu"))
+model.add(tf.keras.layers.Dense(1,activation="sigmoid"))
+model.compile(optimizer=tf.keras.optimizers.Adam(learning_rate=0.001),loss="binary_crossentropy",metrics=[tf.keras.metrics.AUC(curve="pr",name="auc")])
+model.fit(X,Y,epochs=1000)
 model.summary()
 
 model.save("model1.keras")

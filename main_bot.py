@@ -13,10 +13,9 @@ answers = [item["answer"] for item in faq_data]
 
 tf.get_logger().setLevel('ERROR')
 
-bert_url = "https://tfhub.dev/tensorflow/bert_multi_cased_L-12_H-768_A-12/3"
+bert_url = "https://tfhub.dev/tensorflow/bert_multi_cased_L-12_H-768_A-12/1"
 bpre_url = "https://tfhub.dev/tensorflow/bert_multi_cased_preprocess/3"
 
-print("Loading BERT...")
 bert_preprocess_model = hub.KerasLayer(bpre_url)
 bert_model = hub.KerasLayer(bert_url)
 loaded_model = tf.keras.models.load_model("model1.keras")

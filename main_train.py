@@ -20,8 +20,8 @@ answers = [item["answer"] for item in faq_data]
 
 tf.get_logger().setLevel('ERROR')
 
-bert="https://tfhub.dev/tensorflow/small_bert/bert_en_uncased_L-4_H-512_A-8/1"
-bpre="https://tfhub.dev/tensorflow/bert_en_uncased_preprocess/3"
+bert = "https://tfhub.dev/tensorflow/bert_multi_cased_L-12_H-768_A-12/1"
+bpre = "https://tfhub.dev/tensorflow/bert_multi_cased_preprocess/3"
 
 bert_preprocess_model=hub.KerasLayer(bpre)
 text_test=['this is such and amazing movie!']
